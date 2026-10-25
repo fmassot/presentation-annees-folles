@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Roaring Twenties — Art Deco style test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Poiret+One&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --ink: #121212;
+    --gold: #d4af37;
+    --gold-light: #f1d67a;
+    --gold-dark: #8a6d1f;
+    --cream: #f3e9d2;
+    --red: #b8322a;
+    --gold-grad: linear-gradient(180deg, #f8e7a1 0%, #d4af37 45%, #8a6d1f 100%);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--black); color: var(--cream); overflow: hidden;
+    font-family: 'Josefin Sans', 'Century Gothic', sans-serif; }
+
+  /* ---------- Slides ---------- */
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .8s ease;
+    padding: 6vh 8vw;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  /* Background pattern: subtle deco fan scales */
+  body::before {
+    content: ""; position: fixed; inset: 0; opacity: .06; pointer-events: none;
+    background:
+      radial-gradient(circle at 50% 100%, transparent 38%, var(--gold) 39%, var(--gold) 41%, transparent 42%,
+                      transparent 58%, var(--gold) 59%, var(--gold) 61%, transparent 62%) 0 0 / 80px 40px;
+  }
+
+  /* ---------- Deco frame with stepped corners ---------- */
+  .frame {
+    position: fixed; inset: 3vh 3vw; pointer-events: none; z-index: 10;
+    border: 1px solid var(--gold-dark);
+  }
+  .frame::before {
+    content: ""; position: absolute; inset: 8px; border: 2px solid var(--gold);
+    clip-path: polygon(0 30px, 30px 30px, 30px 0, calc(100% - 30px) 0, calc(100% - 30px) 30px, 100% 30px,
+      100% calc(100% - 30px), calc(100% - 30px) calc(100% - 30px), calc(100% - 30px) 100%,
+      30px 100%, 30px calc(100% - 30px), 0 calc(100% - 30px));
+  }
+  .corner { position: absolute; width: 60px; height: 60px; }
+  .corner svg { width: 100%; height: 100%; }
+  .corner.tl { top: -1px; left: -1px; }
+  .corner.tr { top: -1px; right: -1px; transform: scaleX(-1); }
+  .corner.bl { bottom: -1px; left: -1px; transform: scaleY(-1); }
+  .corner.br { bottom: -1px; right: -1px; transform: scale(-1); }
+
+  /* ---------- Typography ---------- */
+  .gold-text {
+    background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  h1 {
+    font-family: 'Limelight', 'Broadway', serif; font-weight: 400;
+    font-size: clamp(3rem, 9vw, 8rem); letter-spacing: .08em; line-height: 1; text-align: center;
+  }
+  h2 {
+    font-family: 'Poiret One', serif; font-size: clamp(2rem, 4.5vw, 4rem);
+    letter-spacing: .15em; text-transform: uppercase; text-align: center;
+  }
+  .kicker {
+    font-family: 'Josefin Sans', sans-serif; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .5em; font-size: clamp(.7rem, 1.1vw, 1rem); color: var(--gold);
+  }
+  .subtitle {
+    font-family: 'Poiret One', serif; font-size: clamp(1.2rem, 2.4vw, 2rem);
+    letter-spacing: .3em; text-transform: uppercase; color: var(--cream); margin-top: 2vh;
+  }
+
+  /* Deco divider: line — diamond — line */
+  .divider { display: flex; align-items: center; gap: 14px; margin: 3vh 0; width: min(520px, 70vw); }
+  .divider span { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .divider i { width: 12px; height: 12px; border: 1px solid var(--gold); transform: rotate(45deg); position: relative; }
+  .divider i::after { content: ""; position: absolute; inset: 3px; background: var(--gold); }
+
+  /* ---------- Slide 1 : sunburst ---------- */
+  .sunburst {
+    position: absolute; width: 160vmax; height: 160vmax; left: 50%; top: 50%;
+    transform: translate(-50%, -50%); z-index: -1; opacity: .18;
+    background: repeating-conic-gradient(from 0deg, var(--gold) 0deg 3deg, transparent 3deg 12deg);
+    -webkit-mask: radial-gradient(circle, #000 0%, transparent 55%);
+            mask: radial-gradient(circle, #000 0%, transparent 55%);
+    animation: spin 120s linear infinite;
+  }
+  @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  .arch {
+    width: min(420px, 60vw); height: 70px; margin-bottom: 3vh;
+  }
+
+  .reveal { opacity: 0; transform: translateY(20px); transition: all 1s cubic-bezier(.2,.7,.2,1); }
+  .active .reveal { opacity: 1; transform: none; }
+  .active .d1 { transition-delay: .2s; } .active .d2 { transition-delay: .5s; }
+  .active .d3 { transition-delay: .8s; } .active .d4 { transition-delay: 1.1s; }
+
+  /* ---------- Slide 2 : stat cards ---------- */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3vw; margin-top: 5vh; width: 100%; max-width: 1200px; }
+  .card {
+    position: relative; padding: 4vh 2vw 3vh; text-align: center;
+    border: 1px solid var(--gold-dark); background: linear-gradient(180deg, #16130b, #0b0b0b);
+    clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%, 0 20px);
+  }
+  .card::before { /* small stepped crown on top */
+    content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 60px; height: 6px; background: var(--gold);
+    box-shadow: 0 6px 0 -0px transparent;
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+  }
+  .card .icon { height: 54px; margin-bottom: 2vh; }
+  .card .num {
+    font-family: 'Limelight', serif; font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1;
+  }
+  .card .unit { font-family: 'Poiret One', serif; font-size: 1.4rem; letter-spacing: .2em; color: var(--gold-light); }
+  .card .label { margin-top: 2vh; font-size: clamp(.9rem, 1.2vw, 1.1rem); letter-spacing: .08em; line-height: 1.5; color: #cfc4ac; }
+  .card .from { margin-top: 1.5vh; font-size: .85rem; color: var(--gold); letter-spacing: .2em; text-transform: uppercase; }
+
+  /* ---------- Slide 3 : chart ---------- */
+  .chart-wrap { width: 100%; max-width: 1150px; margin-top: 3vh; }
+  #dow { width: 100%; height: auto; overflow: visible; }
+  #dow .axis text { fill: #a99d84; font-family: 'Josefin Sans'; font-size: 13px; letter-spacing: .1em; }
+  #dow .grid line { stroke: var(--gold-dark); stroke-opacity: .25; stroke-dasharray: 2 6; }
+  #dow .line { fill: none; stroke: url(#goldStroke); stroke-width: 3.5; stroke-linejoin: round; }
+  #dow .area { fill: url(#goldFill); opacity: 0; transition: opacity 1.5s 2.5s; }
+  .active #dow .area { opacity: 1; }
+  #dow .annot { opacity: 0; transition: opacity .8s; }
+  #dow .annot.show { opacity: 1; }
+  #dow .annot text { font-family: 'Poiret One'; font-size: 17px; fill: var(--cream); letter-spacing: .08em; }
+  #dow .annot .big { font-family: 'Limelight'; font-size: 26px; }
+  .source { margin-top: 1.5vh; font-size: .75rem; letter-spacing: .15em; color: #7d7360; text-transform: uppercase; }
+
+  /* ---------- Nav ---------- */
+  .nav { position: fixed; bottom: 5.5vh; left: 50%; transform: translateX(-50%); display: flex; gap: 14px; z-index: 20; }
+  .nav button { width: 12px; height: 12px; transform: rotate(45deg); border: 1px solid var(--gold); background: transparent; cursor: pointer; transition: background .3s; }
+  .nav button.on { background: var(--gold); }
+  .hint { position: fixed; bottom: 5.5vh; right: 6vw; font-size: .7rem; letter-spacing: .3em; color: var(--gold-dark); text-transform: uppercase; z-index: 20; }
+  .chapter { position: fixed; top: 5.5vh; left: 6vw; font-family: 'Poiret One'; letter-spacing: .4em; color: var(--gold); font-size: .9rem; z-index: 20; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<!-- Decorative frame -->
+<div class="frame">
+  <div class="corner tl"><svg viewBox="0 0 60 60"><path d="M0 0H60M0 0V60M10 10H45M10 10V45M20 20H32M20 20V32" stroke="#d4af37" stroke-width="1.5" fill="none"/></svg></div>
+  <div class="corner tr"><svg viewBox="0 0 60 60"><path d="M0 0H60M0 0V60M10 10H45M10 10V45M20 20H32M20 20V32" stroke="#d4af37" stroke-width="1.5" fill="none"/></svg></div>
+  <div class="corner bl"><svg viewBox="0 0 60 60"><path d="M0 0H60M0 0V60M10 10H45M10 10V45M20 20H32M20 20V32" stroke="#d4af37" stroke-width="1.5" fill="none"/></svg></div>
+  <div class="corner br"><svg viewBox="0 0 60 60"><path d="M0 0H60M0 0V60M10 10H45M10 10V45M20 20H32M20 20V32" stroke="#d4af37" stroke-width="1.5" fill="none"/></svg></div>
+</div>
+<div class="chapter" id="chapter"></div>
+
+<!-- ============ SLIDE 1 : TITLE ============ -->
+<section class="slide" data-chapter="">
+  <div class="sunburst"></div>
+  <svg class="arch reveal d1" viewBox="0 0 420 70">
+    <!-- stepped skyscraper crown / fan motif -->
+    <g stroke="#d4af37" fill="none" stroke-width="1.5">
+      <path d="M210 5 L210 65"/>
+      <path d="M210 65 Q210 15 160 10 M210 65 Q210 15 260 10"/>
+      <path d="M210 65 Q205 30 120 25 M210 65 Q215 30 300 25"/>
+      <path d="M210 65 Q200 45 80 45 M210 65 Q220 45 340 45"/>
+      <path d="M0 65 H420"/>
+      <path d="M30 58 H390" stroke-opacity=".5"/>
+    </g>
+  </svg>
+  <div class="kicker reveal d1">The Western World · 1919 — 1929</div>
+  <h1 class="gold-text reveal d2">The Roaring<br>Twenties</h1>
+  <div class="divider reveal d3"><span></span><i></i><span></span></div>
+  <div class="subtitle reveal d4">Jazz · Money · Modernity · Crash</div>
+</section>
+
+<!-- ============ SLIDE 2 : STATS ============ -->
+<section class="slide" data-chapter="Chapter III · America">
+  <div class="kicker reveal d1">The consumer revolution</div>
+  <h2 class="gold-text reveal d1" style="margin-top:1.5vh">America Takes the Wheel</h2>
+  <div class="divider reveal d2"><span></span><i></i><span></span></div>
+
+  <div class="cards">
+    <div class="card reveal d2">
+      <svg class="icon" viewBox="0 0 80 54" fill="none" stroke="#d4af37" stroke-width="2">
+        <path d="M6 38 H74 V30 L62 26 L52 12 H24 L16 26 L6 28 Z"/><circle cx="20" cy="40" r="7" fill="#0b0b0b"/><circle cx="60" cy="40" r="7" fill="#0b0b0b"/><path d="M28 14 V26 M48 14 V26 M16 26 H62"/>
+      </svg>
+      <div class="num gold-text" data-count="23">0</div>
+      <div class="unit">MILLION</div>
+      <div class="label">cars on American roads in 1929</div>
+      <div class="from">from 8 M in 1920</div>
+    </div>
+    <div class="card reveal d3">
+      <svg class="icon" viewBox="0 0 80 54" fill="none" stroke="#d4af37" stroke-width="2">
+        <path d="M14 52 V22 Q40 -6 66 22 V52 Z"/><path d="M22 52 V26 Q40 6 58 26 V52"/><circle cx="40" cy="36" r="6"/><path d="M28 46 H52"/>
+      </svg>
+      <div class="num gold-text" data-count="12">0</div>
+      <div class="unit">MILLION</div>
+      <div class="label">households with a radio by 1930</div>
+      <div class="from">first station: 1920</div>
+    </div>
+    <div class="card reveal d4">
+      <svg class="icon" viewBox="0 0 80 54" fill="none" stroke="#d4af37" stroke-width="2">
+        <path d="M8 48 L26 34 L38 40 L58 14 L72 8"/><path d="M62 8 H72 V18"/><path d="M4 52 H76"/>
+      </svg>
+      <div class="num gold-text" data-count="500">0</div>
+      <div class="unit">PERCENT</div>
+      <div class="label">rise of the Dow Jones, 1921 → 1929</div>
+      <div class="from">63 → 381 points</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3 : CHART ============ -->
+<section class="slide" data-chapter="Chapter VI · The Crash">
+  <div class="kicker reveal d1">Wall Street, New York</div>
+  <h2 class="gold-text reveal d1" style="margin-top:1.5vh">What Goes Up…</h2>
+  <div class="chart-wrap">
+    <svg id="dow" viewBox="0 0 1100 460"></svg>
+    <div class="source">Dow Jones Industrial Average · approximate values</div>
+  </div>
+</section>
+
+<nav class="nav" id="nav"></nav>
+<div class="hint">← → to navigate</div>
+
+<script>
+/* ---------- Navigation ---------- */
+const slides = [...document.querySelectorAll('.slide')];
+const nav = document.getElementById('nav');
+const chapterEl = document.getElementById('chapter');
+let current = 0;
+
+slides.forEach((_, i) => {
+  const b = document.createElement('button');
+  b.onclick = () => go(i);
+  nav.appendChild(b);
+});
+
+function go(i) {
+  current = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => s.classList.toggle('active', k === current));
+  [...nav.children].forEach((b, k) => b.classList.toggle('on', k === current));
+  chapterEl.textContent = slides[current].dataset.chapter || '';
+  onEnter(current);
+}
+document.addEventListener('keydown', e => {
+  if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) go(current + 1);
+  if (['ArrowLeft', 'PageUp'].includes(e.key)) go(current - 1);
+});
+
+/* ---------- Slide-specific animations ---------- */
+function onEnter(i) {
+  if (i === 1) countUp();
+  if (i === 2) drawChart();
+}
+
+function countUp() {
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target = +el.dataset.count, t0 = performance.now(), dur = 2000;
+    const step = t => {
+      const p = Math.min(1, (t - t0) / dur), eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased);
+      if (p < 1) requestAnimationFrame(step);
+    };
+    setTimeout(() => requestAnimationFrame(step), 600);
+  });
+}
+
+/* ---------- Dow Jones chart (pure SVG) ---------- */
+const dowData = [
+  [1921.6, 64], [1922.0, 81], [1922.5, 95], [1923.0, 98], [1923.5, 88], [1924.0, 95],
+  [1924.5, 100], [1925.0, 121], [1925.5, 135], [1926.0, 157], [1926.5, 150], [1927.0, 155],
+  [1927.5, 175], [1928.0, 200], [1928.5, 215], [1929.0, 300], [1929.4, 300], [1929.67, 381],
+  [1929.83, 230], [1929.87, 199], [1930.3, 294], [1930.9, 165], [1931.5, 140], [1931.95, 78], [1932.52, 41],
+  [1932.9, 60]
+];
+const W = 1100, H = 460, M = { l: 60, r: 30, t: 30, b: 40 };
+const x = v => M.l + (v - 1921) / (1933 - 1921) * (W - M.l - M.r);
+const y = v => H - M.b - v / 400 * (H - M.t - M.b);
+
+function drawChart() {
+  const svg = document.getElementById('dow');
+  let s = `<defs>
+    <linearGradient id="goldStroke" x1="0" x2="1"><stop offset="0" stop-color="#8a6d1f"/><stop offset=".6" stop-color="#f1d67a"/><stop offset="1" stop-color="#b8322a"/></linearGradient>
+    <linearGradient id="goldFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4af37" stop-opacity=".35"/><stop offset="1" stop-color="#d4af37" stop-opacity="0"/></linearGradient>
+  </defs>`;
+  s += '<g class="grid">';
+  for (let v = 0; v <= 400; v += 100) s += `<line x1="${M.l}" x2="${W - M.r}" y1="${y(v)}" y2="${y(v)}"/>`;
+  s += '</g><g class="axis">';
+  for (let v = 0; v <= 400; v += 100) s += `<text x="${M.l - 12}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+  for (let yr = 1921; yr <= 1933; yr++) s += `<text x="${x(yr)}" y="${H - 10}" text-anchor="middle">${yr}</text>`;
+  s += '</g>';
+
+  const pts = dowData.map(([a, b]) => `${x(a)},${y(b)}`).join(' L');
+  s += `<path class="area" d="M${x(dowData[0][0])},${y(0)} L${pts} L${x(dowData.at(-1)[0])},${y(0)} Z"/>`;
+  s += `<path class="line" id="dowLine" d="M${pts}"/>`;
+
+  // annotations
+  const peak = [1929.67, 381], low = [1932.52, 41], crash = [1929.83, 230];
+  s += `<g class="annot" id="aPeak">
+      <circle cx="${x(peak[0])}" cy="${y(peak[1])}" r="7" fill="#f1d67a"/>
+      <text x="${x(peak[0]) - 20}" y="${y(peak[1]) - 2}" text-anchor="end" class="big" fill="#f1d67a">381</text>
+      <text x="${x(peak[0]) - 20}" y="${y(peak[1]) + 22}" text-anchor="end">Sept 3, 1929 — the peak</text></g>`;
+  s += `<g class="annot" id="aCrash">
+      <line x1="${x(crash[0])}" x2="${x(crash[0])}" y1="${y(crash[1]) + 10}" y2="${y(30)}" stroke="#b8322a" stroke-dasharray="4 4"/>
+      <text x="${x(crash[0]) + 14}" y="${y(crash[1]) + 8}" fill="#e05a50" class="big" style="fill:#e05a50">BLACK TUESDAY</text>
+      <text x="${x(crash[0]) + 14}" y="${y(crash[1]) + 32}">Oct 29, 1929</text></g>`;
+  s += `<g class="annot" id="aLow">
+      <circle cx="${x(low[0])}" cy="${y(low[1])}" r="7" fill="#b8322a"/>
+      <text x="${x(low[0])}" y="${y(low[1]) - 40}" text-anchor="middle" class="big" style="fill:#e05a50">41</text>
+      <text x="${x(low[0])}" y="${y(low[1]) - 18}" text-anchor="middle">July 1932 · −89%</text></g>`;
+  svg.innerHTML = s;
+
+  const line = document.getElementById('dowLine');
+  const len = line.getTotalLength();
+  line.style.strokeDasharray = len;
+  line.style.strokeDashoffset = len;
+  line.getBoundingClientRect();
+  line.style.transition = 'stroke-dashoffset 4s cubic-bezier(.45,0,.55,1)';
+  line.style.strokeDashoffset = 0;
+  setTimeout(() => document.getElementById('aPeak').classList.add('show'), 2700);
+  setTimeout(() => document.getElementById('aCrash').classList.add('show'), 3200);
+  setTimeout(() => document.getElementById('aLow').classList.add('show'), 4000);
+}
+
+go(0);
+</script>
+</body>
+</html>
